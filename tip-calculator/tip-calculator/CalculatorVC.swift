@@ -16,11 +16,12 @@ class CalculatorVC: UIViewController {
     private let tipInmputView = TipInputView()
     private let splitInputView = SplitInputView()
     private lazy var vStackView: UIStackView = {
-        let stackView = UIStackView(arrangedSubviews: [logoView,
+    let stackView = UIStackView(arrangedSubviews: [logoView,
                                                         resultView,
                                                         billInputView,
                                                         tipInmputView,
-                                                        splitInputView])
+                                                        splitInputView,
+                                                        UIView()])
         stackView.axis = .vertical
         stackView.spacing = 36
         return stackView
@@ -32,6 +33,7 @@ class CalculatorVC: UIViewController {
     }
     
     private func layout() {
+        view.backgroundColor = ThemeColor.bg
         view.addSubview(vStackView)
         
         vStackView.snp.makeConstraints { make in
