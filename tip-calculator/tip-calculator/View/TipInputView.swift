@@ -156,6 +156,10 @@ class TipInputView: UIView {
         
     }
     
+    func reset() {
+        tipSubject.send(.none)
+    }
+    
     private func buildTipButton(tip: Tip) -> UIButton {
         let button = UIButton(type: .custom)
         button.backgroundColor = ThemeColor.primary

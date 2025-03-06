@@ -13,10 +13,18 @@ class CalculatorVM {
         let billPubliher: AnyPublisher<Double, Never>
         let tipPublisher: AnyPublisher<Tip, Never>
         let splitPublisher: AnyPublisher<Int, Never>
+        let logoViewTapPublisher: AnyPublisher<Void, Never>
     }
     
     struct Output {
         let updateViewPublisher: AnyPublisher<Result, Never>
+        let resetCalculatorPublisher: AnyPublisher<Void, Never>
+    }
+    
+    private let audioPlayerService: AudioPlayerService
+    
+    init(audioPlayerService: AudioPlayerService = DefaultAudioPlayerService()) {
+        self.audioPlayerService = audioPlayerService
     }
     
     func transofr(input: Input) -> Output{
@@ -26,10 +34,17 @@ class CalculatorVM {
             let totalTip = getTipAmount(billAmount: bill, tip: tip)
             let totalBill = bill + totalTip
             let amountPerPErson = totalBill / Double(split)
-            let result = Result(amounPerPerson: amountPerPErson, totalBill: totalBill, totalTip: totalBill)
+            let result = Result(amounPerPerson: amountPerPErson, totalBill: totalBill, totalTip: totalTip)
             return Just(result)
         }.eraseToAnyPublisher()
-        return Output(updateViewPublisher: updateViewPublisher)
+        
+        let resetCalculatorPublisher = input.logoViewTapPublisher.handleEvents(receiveOutput: { [unowned self] in
+            audioPlayerService.playSound()
+        }).flatMap({
+            return Just(())
+        }).eraseToAnyPublisher()
+        
+        return Output(updateViewPublisher: updateViewPublisher, resetCalculatorPublisher: resetCalculatorPublisher)
     }
     
     private func getTipAmount(billAmount: Double, tip: Tip) -> Double {
