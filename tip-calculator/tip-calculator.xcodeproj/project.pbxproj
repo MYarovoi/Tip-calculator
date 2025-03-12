@@ -38,6 +38,13 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		1A138CD92D808C92005798D5 /* Exceptions for "tip-calculator" folder in "tip-calculatorUITests" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Model/ScreenIdentifier.swift,
+			);
+			target = BF703A262D65FDCC00659CF2 /* tip-calculatorUITests */;
+		};
 		BF703A2F2D65FDCC00659CF2 /* Exceptions for "tip-calculator" folder in "tip-calculator" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
@@ -52,6 +59,7 @@
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
 				BF703A2F2D65FDCC00659CF2 /* Exceptions for "tip-calculator" folder in "tip-calculator" target */,
+				1A138CD92D808C92005798D5 /* Exceptions for "tip-calculator" folder in "tip-calculatorUITests" target */,
 			);
 			path = "tip-calculator";
 			sourceTree = "<group>";

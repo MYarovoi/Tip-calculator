@@ -9,7 +9,10 @@ import UIKit
 
 class ResultView: UIView {
     private let headerLabel: UILabel = {
-        LabelFactory.build(text: "Total p/person", font: ThemeFont.demiBold(ofSize: 18))
+        let label = LabelFactory.build(text: "Total p/person", font: ThemeFont.demiBold(ofSize: 18))
+        label.adjustsFontSizeToFitWidth = true
+        label.minimumScaleFactor = 0.8
+        return label
     }()
     
     private let amountPerPersonLabel: UILabel = {
@@ -18,6 +21,9 @@ class ResultView: UIView {
         let text = NSMutableAttributedString(string: "$0", attributes: [.font: ThemeFont.bold(ofSize: 48)])
         text.addAttributes([.font: ThemeFont.bold(ofSize: 24)], range: NSMakeRange(0, 1))
         label.attributedText = text
+        label.adjustsFontSizeToFitWidth = true
+        label.minimumScaleFactor = 0.8
+        label.accessibilityIdentifier = ScreenIdentifier.ResultView.totalAmountPerPersonValueLabel.rawValue
         return label
     }()
     
@@ -39,12 +45,12 @@ class ResultView: UIView {
     }()
     
     private let totalBillView: AmountView = {
-        let view = AmountView(text: "Total bill", alignment: .left)
+        let view = AmountView(text: "Total bill", alignment: .left, amountLabelIdentifier: ScreenIdentifier.ResultView.totalBillValueLabel.rawValue)
         return view
     }()
     
     private let totalTipView: AmountView = {
-        let view = AmountView(text: "Total tip", alignment: .right)
+        let view = AmountView(text: "Total tip", alignment: .right, amountLabelIdentifier: ScreenIdentifier.ResultView.totalTipValueLabel.rawValue)
         return view
     }()
     
@@ -79,7 +85,7 @@ class ResultView: UIView {
         backgroundColor = .white
         addSubview(vStackView)
         vStackView.snp.makeConstraints { make in
-            make.top.equalTo(snp.top).offset(24)
+            make.top.equalTo(snp.top).offset(24).priority(750)
             make.leading.equalTo(snp.leading).offset(24)
             make.trailing.equalTo(snp.trailing).offset(-24)
             make.bottom.equalTo(snp.bottom).offset(-24)
@@ -90,6 +96,33 @@ class ResultView: UIView {
         }
         
         addShadow(offset: CGSize(width: 0, height: 3), color: .black, radius: 12.0, opacity: 0.1)
+    }
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        
+        let screenWidth = self.bounds.width
+        
+        if screenWidth < 375 {
+            vStackView.spacing = 4
+            
+            headerLabel.font = ThemeFont.demiBold(ofSize: 16)
+            if let currentText = amountPerPersonLabel.attributedText?.string {
+                let newText = NSMutableAttributedString(string: currentText,
+                                                        attributes: [.font: ThemeFont.bold(ofSize: 42)])
+                newText.addAttributes([.font: ThemeFont.bold(ofSize: 20)], range: NSRange(location: 0, length: 1))
+                amountPerPersonLabel.attributedText = newText
+            }
+        } else {
+            vStackView.spacing = 8
+            headerLabel.font = ThemeFont.demiBold(ofSize: 18)
+            if let currentText = amountPerPersonLabel.attributedText?.string {
+                let newText = NSMutableAttributedString(string: currentText,
+                                                        attributes: [.font: ThemeFont.bold(ofSize: 48)])
+                newText.addAttributes([.font: ThemeFont.bold(ofSize: 24)], range: NSRange(location: 0, length: 1))
+                amountPerPersonLabel.attributedText = newText
+            }
+        }
     }
     
     private func buildSpacerView(height: CGFloat) -> UIView {

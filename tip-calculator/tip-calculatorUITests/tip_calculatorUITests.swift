@@ -8,36 +8,65 @@
 import XCTest
 
 final class tip_calculatorUITests: XCTestCase {
-
-    override func setUpWithError() throws {
-        // Put setup code here. This method is called before the invocation of each test method in the class.
-
-        // In UI tests it is usually best to stop immediately when a failure occurs.
-        continueAfterFailure = false
-
-        // In UI tests it’s important to set the initial state - such as interface orientation - required for your tests before they run. The setUp method is a good place to do this.
+    private var app: XCUIApplication!
+    private var screen: CalculatorScreen {
+        CalculatorScreen(app: app)
     }
-
-    override func tearDownWithError() throws {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
-    }
-
-    @MainActor
-    func testExample() throws {
-        // UI tests must launch the application that they test.
-        let app = XCUIApplication()
+    
+    override func setUp() {
+        super.setUp()
+        app = .init()
         app.launch()
-
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
     }
-
-    @MainActor
-    func testLaunchPerformance() throws {
-        if #available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 7.0, *) {
-            // This measures how long it takes to launch your application.
-            measure(metrics: [XCTApplicationLaunchMetric()]) {
-                XCUIApplication().launch()
-            }
-        }
+    
+    override func tearDown() {
+        super.tearDown()
+        app = nil
+    }
+    
+    func testResultViewDefaultValue() {
+        XCTAssertEqual(screen.totalAmontPerPErsonLabel.label, "$0")
+        XCTAssertEqual(screen.totalTiplValueLabel.label, "$0")
+        XCTAssertEqual(screen.totalBillValueLabel.label, "$0")
+    }
+    
+    func testRegularTip() {
+        screen.enterBill(amont: 100)
+        XCTAssertEqual(screen.totalAmontPerPErsonLabel.label, "100")
+        XCTAssertEqual(screen.totalBillValueLabel.label, "100")
+        XCTAssertEqual(screen.totalTiplValueLabel.label, "0")
+                
+        screen.selectTip(tip: .tenPercent)
+        XCTAssertEqual(screen.totalAmontPerPErsonLabel.label, "110")
+        XCTAssertEqual(screen.totalBillValueLabel.label, "110")
+        XCTAssertEqual(screen.totalTiplValueLabel.label, "10")
+        
+        screen.selectIncrementButton(numberOfTaps: 3)
+        XCTAssertEqual(screen.totalAmontPerPErsonLabel.label, "30")
+        XCTAssertEqual(screen.totalBillValueLabel.label, "120")
+        XCTAssertEqual(screen.totalTiplValueLabel.label, "20")
+    }
+    
+    func testCustomTipAndSplitBillByTwo() {
+        screen.enterBill(amont: 300)
+        screen.selectTip(tip: .custom(value: 200))
+        screen.selectIncrementButton(numberOfTaps: 1)
+        XCTAssertEqual(screen.totalAmontPerPErsonLabel.label, "250")
+        XCTAssertEqual(screen.totalBillValueLabel.label, "500")
+        XCTAssertEqual(screen.totalTiplValueLabel.label, "200")
+    }
+    
+    func testResetButton() {
+        screen.enterBill(amont: 300)
+        screen.selectTip(tip: .custom(value: 200))
+        screen.selectIncrementButton(numberOfTaps: 1)
+        screen.doubleTapLogoView()
+        XCTAssertEqual(screen.totalAmontPerPErsonLabel.label, "0")
+        XCTAssertEqual(screen.totalBillValueLabel.label, "0")
+        XCTAssertEqual(screen.totalTiplValueLabel.label, "0")
+        XCTAssertEqual(screen.totalBillValueLabel.label, "")
+        XCTAssertEqual(screen.splitValueLabel.label, "1")
+        XCTAssertEqual(screen.totalTiplValueLabel.label, "0")
+        XCTAssertEqual(screen.customTipButton.label, "Custom tip")
     }
 }

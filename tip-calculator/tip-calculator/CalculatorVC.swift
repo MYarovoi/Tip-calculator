@@ -18,12 +18,12 @@ class CalculatorVC: UIViewController {
     private let tipInmputView = TipInputView()
     private let splitInputView = SplitInputView()
     private lazy var vStackView: UIStackView = {
-    let stackView = UIStackView(arrangedSubviews: [logoView,
-                                                        resultView,
-                                                        billInputView,
-                                                        tipInmputView,
-                                                        splitInputView,
-                                                        UIView()])
+        let stackView = UIStackView(arrangedSubviews: [logoView,
+                                                       resultView,
+                                                       billInputView,
+                                                       tipInmputView,
+                                                       splitInputView,
+                                                       UIView()])
         stackView.axis = .vertical
         stackView.spacing = 36
         return stackView
@@ -35,7 +35,7 @@ class CalculatorVC: UIViewController {
             Just(())
         }.eraseToAnyPublisher()
     }()
-    private lazy var logoViewTapPublisher: AnyPublisher<Void, Never> = {
+    private lazy var  logoViewTapPublisher: AnyPublisher<Void, Never> = {
         let tapGesture = UITapGestureRecognizer(target: self, action: nil)
         tapGesture.numberOfTapsRequired = 2
         logoView.addGestureRecognizer(tapGesture)
@@ -43,10 +43,10 @@ class CalculatorVC: UIViewController {
             Just(())
         }.eraseToAnyPublisher()
     }()
-
+    
     private var cancellables = Set<AnyCancellable>()
     let vm = CalculatorVM()
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         layout()
@@ -121,6 +121,18 @@ class CalculatorVC: UIViewController {
         splitInputView.snp.makeConstraints { make in
             make.height.equalTo(56)
         }
+    }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        let currentWidth = self.view.bounds.width
+        let minWidth: CGFloat = 320
+        let maxWidth: CGFloat = 414
+        let minSpacing: CGFloat = 16
+        let maxSpacing: CGFloat = 36
+        let clampedWidth = min(max(currentWidth, minWidth), maxWidth)
+        let spacing = minSpacing + (clampedWidth - minWidth) / (maxWidth - minWidth) * (maxSpacing - minSpacing)
+        vStackView.spacing = spacing
     }
 }
 
